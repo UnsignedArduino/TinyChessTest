@@ -12,6 +12,7 @@ logger = create_logger(name=__name__, level=logging.DEBUG)
 WORKING_SPACE_DIR = Path.cwd() / "working"
 SOURCE_CODE_DIR = WORKING_SPACE_DIR / "sources"
 ENGINE_BIN_DIR = WORKING_SPACE_DIR / "bins"
+SILVER_SUITE_FILE = WORKING_SPACE_DIR / "Silver_opening_suite.pgn"
 
 GIT_CLONE_URL = "https://github.com/Bobingstern/TinyChess"
 CMAKE_BUILD_SYSTEM = "Ninja"

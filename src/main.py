@@ -3,7 +3,8 @@ import shutil
 from argparse import ArgumentParser
 from pathlib import Path
 
-from tinychesstest import ENGINE_BIN_DIR
+from silver_opening_suite import get_silver_opening_suite_pgn
+from tinychess_test import ENGINE_BIN_DIR, SILVER_SUITE_FILE
 from utils.logger import create_logger
 
 logger = create_logger(name=__name__, level=logging.DEBUG)
@@ -82,3 +83,6 @@ logger.debug(f"Copying {engine1_bin} to {engine1_new_bin}")
 shutil.copy(engine1_bin, engine1_new_bin)
 logger.debug(f"Copying {engine2_bin} to {engine2_new_bin}")
 shutil.copy(engine2_bin, engine2_new_bin)
+
+logger.info(f"Copying Silver opening suite")
+SILVER_SUITE_FILE.write_text(get_silver_opening_suite_pgn())
