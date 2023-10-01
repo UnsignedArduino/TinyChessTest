@@ -1,8 +1,9 @@
 import logging
+import shutil
 from argparse import ArgumentParser
 from pathlib import Path
 
-from tinychesstest import compile_cmake_project
+from tinychesstest import ENGINE_BIN_DIR
 from utils.logger import create_logger
 
 logger = create_logger(name=__name__, level=logging.DEBUG)
@@ -45,15 +46,39 @@ if engine1 == engine2:
 # engine1_dir, engine2_dir = fetch_source_code(engine1, engine2)
 # For testing
 engine1_dir = Path(
-    r"E:\TinyChessTest\working\sources\1870905aca990956a53c5cbe8dfa6c2d786ea57e\TinyChess"
+    r"E:\TinyChessTest\working\sources\1870905aca990956a53c5cbe8dfa6c2d786ea57e"
+    r"\TinyChess"
 )
 engine2_dir = Path(r"E:\TinyChessTest\working\sources\main\TinyChess")
 
 logger.debug(f"Engine 1 directory is at {engine1_dir}")
 logger.debug(f"Engine 2 directory is at {engine2_dir}")
 
-engine1_bin = compile_cmake_project(engine1_dir)
-engine2_bin = compile_cmake_project(engine2_dir)
+# engine1_bin = compile_cmake_project(engine1_dir)
+# engine2_bin = compile_cmake_project(engine2_dir)
+# For testing
+engine1_bin = Path(
+    r"E:\TinyChessTest\working\sources\1870905aca990956a53c5cbe8dfa6c2d786ea57e"
+    r"\TinyChess\build\main.exe"
+)
+engine2_bin = Path(r"E:\TinyChessTest\working\sources\main\TinyChess\build\main.exe")
 
 logger.debug(f"Engine 1 binary is at {engine1_bin}")
 logger.debug(f"Engine 2 binary is at {engine2_bin}")
+
+logger.info("Copying binaries")
+ENGINE_BIN_DIR.mkdir(exist_ok=True)
+engine1_new_bin = ENGINE_BIN_DIR / f"tinychess-{engine1}.exe"
+engine2_new_bin = ENGINE_BIN_DIR / f"tinychess-{engine2}.exe"
+if engine1_new_bin.exists():
+    logger.debug(f"Deleting {engine1_new_bin}")
+    engine1_new_bin.unlink()
+engine1_new_bin.touch()
+if engine2_new_bin.exists():
+    logger.debug(f"Deleting {engine2_new_bin}")
+    engine2_new_bin.unlink()
+engine2_new_bin.touch()
+logger.debug(f"Copying {engine1_bin} to {engine1_new_bin}")
+shutil.copy(engine1_bin, engine1_new_bin)
+logger.debug(f"Copying {engine2_bin} to {engine2_new_bin}")
+shutil.copy(engine2_bin, engine2_new_bin)
