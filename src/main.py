@@ -71,6 +71,9 @@ parser.add_argument(
     default=1,
     help="Number of concurrent games. Defaults to 1.",
 )
+parser.add_argument(
+    "--no-book", "-nb", action="store_true", help="Disables the use of an opening book."
+)
 
 args = parser.parse_args()
 logger.debug(f"Arguments received: {args}")
@@ -117,5 +120,10 @@ logger.info(f"Copying Silver opening suite")
 SILVER_SUITE_FILE.write_text(get_silver_opening_suite_pgn())
 
 run_sprt(
-    engine1_new_bin, engine2_new_bin, args.time_control, args.games, args.concurrency
+    engine1_new_bin,
+    engine2_new_bin,
+    args.time_control,
+    args.games,
+    args.concurrency,
+    args.no_book,
 )

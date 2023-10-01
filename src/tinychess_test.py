@@ -138,6 +138,7 @@ def run_sprt(
     time_control: str,
     games: str,
     concurrency: str,
+    no_book: bool = False,
 ):
     """
     Run a Sequential Probability Ratio Test.
@@ -147,7 +148,9 @@ def run_sprt(
     :param time_control: Time control.
     :param games: Game count.
     :param concurrency: Concurrency count.
+    :param no_book: Disable the use of an opening book.
     """
+    logger.info("Running SPRT" + " with no book" if no_book else "")
     assert engine1_bin.parent == engine2_bin.parent
     cwd = engine1_bin.parent
     engine1_cmd = engine1_bin.stem
@@ -156,7 +159,8 @@ def run_sprt(
     run_cmd(
         f"cutechess-cli -engine cmd={engine1_cmd} -engine cmd={engine2_cmd} -each "
         f"proto=uci tc={time_control} timemargin=300 -sprt elo0=0 elo1=5 alpha=0.05 "
-        f"beta=0.05 -games {games} -openings file=../Silver_opening_suite.pgn "
-        f"format=pgn -concurrency {concurrency}",
+        f"beta=0.05 -games {games} -concurrency {concurrency}" + ""
+        if no_book
+        else " -openings file=../Silver_opening_suite.pgn format=pgn ",
         cwd,
     )
