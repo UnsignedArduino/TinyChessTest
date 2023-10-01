@@ -15,7 +15,7 @@ ENGINE_BIN_DIR = WORKING_SPACE_DIR / "bins"
 SILVER_SUITE_FILE = WORKING_SPACE_DIR / "Silver_opening_suite.pgn"
 
 GIT_CLONE_URL = "https://github.com/Bobingstern/TinyChess"
-CMAKE_BUILD_SYSTEM = "Ninja"
+CMAKE_BUILD_SYSTEM = "MinGW Makefiles"
 
 
 def run_cmd(cmd: str, cwd: Optional[Path] = None):
@@ -46,7 +46,7 @@ def delete_dot_git_dir(path: Path):
     rmtree(path)
 
 
-def fetch_source_code(commit: str, no_cache: bool = False) -> Path:
+def fetch_source_code(commit: str, no_cache: bool = True) -> Path:
     """
     Fetch the source code of the engine and checkout a commit or branch.
 
@@ -62,7 +62,10 @@ def fetch_source_code(commit: str, no_cache: bool = False) -> Path:
     if engine_source_dir.exists():
         if not no_cache:
             logger.debug(f"Found cached version of source code")
-            return engine_source_dir / "TinyChess"
+            engine_source_dir = engine_source_dir / "TinyChess"
+            logger.debug(f"Attempting pull in order to update branch")
+            run_cmd("git pull", engine_source_dir)
+            return engine_source_dir
         dot_git_dir = engine_source_dir / "TinyChess" / ".git"
         if dot_git_dir.exists():
             delete_dot_git_dir(dot_git_dir)
@@ -78,11 +81,14 @@ def fetch_source_code(commit: str, no_cache: bool = False) -> Path:
     return engine_source_dir
 
 
-def compile_cmake_project(path: Path, no_cache: bool = False) -> Path:
+def compile_cmake_project(
+    path: Path, build_type: str = "Debug", no_cache: bool = True
+) -> Path:
     """
     Compile a CMake project.
 
     :param path: The path to the directory with the CMakeLists.txt file.
+    :param build_type: Build type. "Debug" or "Release"
     :param no_cache: Do not cache the binary.
     :return: A pathlib.Path pointing to the binary.
     """
@@ -105,8 +111,11 @@ def compile_cmake_project(path: Path, no_cache: bool = False) -> Path:
         rmtree(build_dir)
     build_dir.mkdir()
 
-    logger.debug(f"Generating build system")
-    run_cmd(f'cmake .. -G "{CMAKE_BUILD_SYSTEM}"', build_dir)
+    logger.debug(f"Generating build system with type {build_type}")
+    run_cmd(
+        f'cmake .. -G "{CMAKE_BUILD_SYSTEM}" -D CMAKE_BUILD_TYPE={build_type}',
+        build_dir,
+    )
 
     logger.debug(f"Compiling binary")
     run_cmd(f"cmake --build .", build_dir)

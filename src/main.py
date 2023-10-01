@@ -37,7 +37,16 @@ parser.add_argument(
     "commit hash or branch.",
 )
 parser.add_argument(
-    "--no-cache", action="store_true", help="Whether to not use the cache."
+    "--build-type",
+    "-bt",
+    choices=("Debug", "Release"),
+    default="Debug",
+    help="Build target type when compiling the engines. Defaults to debug.",
+)
+parser.add_argument(
+    "--skip-clone-and-build",
+    action="store_true",
+    help="Whether to skip the clone and build and try to find a cached binary.",
 )
 parser.add_argument(
     "--time-control",
@@ -80,14 +89,18 @@ if engine1 == engine2:
         f"expected!"
     )
 
-engine1_dir = fetch_source_code(engine1, args.no_cache)
-engine2_dir = fetch_source_code(engine2, args.no_cache)
+engine1_dir = fetch_source_code(engine1, not args.skip_clone_and_build)
+engine2_dir = fetch_source_code(engine2, not args.skip_clone_and_build)
 
 logger.debug(f"Engine 1 directory is at {engine1_dir}")
 logger.debug(f"Engine 2 directory is at {engine2_dir}")
 
-engine1_bin = compile_cmake_project(engine1_dir, args.no_cache)
-engine2_bin = compile_cmake_project(engine2_dir, args.no_cache)
+engine1_bin = compile_cmake_project(
+    engine1_dir, args.build_type, not args.skip_clone_and_build
+)
+engine2_bin = compile_cmake_project(
+    engine2_dir, args.build_type, not args.skip_clone_and_build
+)
 
 logger.debug(f"Engine 1 binary is at {engine1_bin}")
 logger.debug(f"Engine 2 binary is at {engine2_bin}")

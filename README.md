@@ -5,8 +5,8 @@ A program for tournament setup for elo testing the
 
 ## Install
 
-1. Have Python, Ninja, CMake, and cutechess-cli installed and in PATH. (tested
-   only on Python 3.11)
+1. Have Python, MinGW, Make, CMake, and cutechess-cli installed and in PATH.
+   (tested only on Python 3.11)
 2. Clone this repo.
 3. Create virtual environment if desired.
 4. Install requirements in [`requirements.txt`](requirements.txt).
@@ -27,8 +27,8 @@ python src/main.py --engine-1-commit 1870905aca990956a53c5cbe8dfa6c2d786ea57e --
 
 ```commandline
 usage: TinyChessTest [-h] --engine-1-commit COMMIT --engine-2-commit COMMIT
-                     [--no-cache] [--time-control TC] [--games COUNT]
-                     [--concurrency COUNT]
+                     [--build-type {Debug,Release}] [--skip-clone-and-build]
+                     [--time-control TC] [--games COUNT] [--concurrency COUNT]
 
 A program for tournament setup for elo testing the TinyChess engine.
 
@@ -40,7 +40,12 @@ options:
   --engine-2-commit COMMIT, -e2c COMMIT
                         TinyChess commit for engine 2. Is passed to `git
                         checkout`, so it can be a commit hash or branch.
-  --no-cache            Whether to not use the cache.
+  --build-type {Debug,Release}, -bt {Debug,Release}
+                        Build target type when compiling the engines. Defaults
+                        to debug.
+  --skip-clone-and-build
+                        Whether to skip the clone and build and try to find a
+                        cached binary.
   --time-control TC, -tc TC
                         (cutechess-cli tc documentation) Set the time control.
                         The format is moves/time+increment, where moves is the
