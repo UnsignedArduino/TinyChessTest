@@ -44,11 +44,6 @@ parser.add_argument(
     help="Build target type when compiling the engines. Defaults to debug.",
 )
 parser.add_argument(
-    "--skip-clone-and-build",
-    action="store_true",
-    help="Whether to skip the clone and build and try to find a cached binary.",
-)
-parser.add_argument(
     "--time-control",
     "-tc",
     metavar="TC",
@@ -73,8 +68,8 @@ parser.add_argument(
     "-c",
     metavar="COUNT",
     type=int,
-    default=5,
-    help="Number of concurrent games. Defaults to 5.",
+    default=1,
+    help="Number of concurrent games. Defaults to 1.",
 )
 
 args = parser.parse_args()
@@ -89,18 +84,14 @@ if engine1 == engine2:
         f"expected!"
     )
 
-engine1_dir = fetch_source_code(engine1, not args.skip_clone_and_build)
-engine2_dir = fetch_source_code(engine2, not args.skip_clone_and_build)
+engine1_dir = fetch_source_code(engine1)
+engine2_dir = fetch_source_code(engine2)
 
 logger.debug(f"Engine 1 directory is at {engine1_dir}")
 logger.debug(f"Engine 2 directory is at {engine2_dir}")
 
-engine1_bin = compile_cmake_project(
-    engine1_dir, args.build_type, not args.skip_clone_and_build
-)
-engine2_bin = compile_cmake_project(
-    engine2_dir, args.build_type, not args.skip_clone_and_build
-)
+engine1_bin = compile_cmake_project(engine1_dir, args.build_type)
+engine2_bin = compile_cmake_project(engine2_dir, args.build_type)
 
 logger.debug(f"Engine 1 binary is at {engine1_bin}")
 logger.debug(f"Engine 2 binary is at {engine2_bin}")

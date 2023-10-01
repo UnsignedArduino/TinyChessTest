@@ -27,8 +27,8 @@ python src/main.py --engine-1-commit 1870905aca990956a53c5cbe8dfa6c2d786ea57e --
 
 ```commandline
 usage: TinyChessTest [-h] --engine-1-commit COMMIT --engine-2-commit COMMIT
-                     [--build-type {Debug,Release}] [--skip-clone-and-build]
-                     [--time-control TC] [--games COUNT] [--concurrency COUNT]
+                     [--build-type {Debug,Release}] [--time-control TC]
+                     [--games COUNT] [--concurrency COUNT]
 
 A program for tournament setup for elo testing the TinyChess engine.
 
@@ -43,9 +43,6 @@ options:
   --build-type {Debug,Release}, -bt {Debug,Release}
                         Build target type when compiling the engines. Defaults
                         to debug.
-  --skip-clone-and-build
-                        Whether to skip the clone and build and try to find a
-                        cached binary.
   --time-control TC, -tc TC
                         (cutechess-cli tc documentation) Set the time control.
                         The format is moves/time+increment, where moves is the
