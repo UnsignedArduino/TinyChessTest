@@ -1,7 +1,8 @@
 import logging
 from argparse import ArgumentParser
+from pathlib import Path
 
-from tinychesstest import fetch_source_code
+from tinychesstest import compile_cmake_project
 from utils.logger import create_logger
 
 logger = create_logger(name=__name__, level=logging.DEBUG)
@@ -41,12 +42,18 @@ if engine1 == engine2:
         f"expected!"
     )
 
-engine1_dir, engine2_dir = fetch_source_code(engine1, engine2)
+# engine1_dir, engine2_dir = fetch_source_code(engine1, engine2)
 # For testing
-# engine1_dir = Path(
-#     r"E:\TinyChessTest\working\sources\1870905aca990956a53c5cbe8dfa6c2d786ea57e\TinyChess"
-# )
-# engine2_dir = Path(r"E:\TinyChessTest\working\sources\main\TinyChess")
+engine1_dir = Path(
+    r"E:\TinyChessTest\working\sources\1870905aca990956a53c5cbe8dfa6c2d786ea57e\TinyChess"
+)
+engine2_dir = Path(r"E:\TinyChessTest\working\sources\main\TinyChess")
 
 logger.debug(f"Engine 1 directory is at {engine1_dir}")
 logger.debug(f"Engine 2 directory is at {engine2_dir}")
+
+engine1_bin = compile_cmake_project(engine1_dir)
+engine2_bin = compile_cmake_project(engine2_dir)
+
+logger.debug(f"Engine 1 binary is at {engine1_bin}")
+logger.debug(f"Engine 2 binary is at {engine2_bin}")

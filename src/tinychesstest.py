@@ -8,10 +8,12 @@ from typing import Optional
 from utils.logger import create_logger
 
 logger = create_logger(name=__name__, level=logging.DEBUG)
+
 WORKING_SPACE_DIR = Path.cwd() / "working"
 SOURCE_CODE_DIR = WORKING_SPACE_DIR / "sources"
 
-CLONE_URL = "https://github.com/Bobingstern/TinyChess"
+GIT_CLONE_URL = "https://github.com/Bobingstern/TinyChess"
+CMAKE_BUILD_SYSTEM = "Ninja"
 
 
 def run_cmd(cmd: str, cwd: Optional[Path] = None):
@@ -67,21 +69,44 @@ def fetch_source_code(engine1: str, engine2: str) -> tuple[Path, Path]:
         logger.debug(f"Creating {dir_to_create}")
         dir_to_create.mkdir()
 
-    run_cmd(f"git clone {CLONE_URL}", engine1_source_dir)
+    run_cmd(f"git clone {GIT_CLONE_URL}", engine1_source_dir)
     engine1_source_dir = engine1_source_dir / "TinyChess"
     run_cmd(f"git checkout {engine1}", engine1_source_dir)
 
-    run_cmd(f"git clone {CLONE_URL}", engine2_source_dir)
+    run_cmd(f"git clone {GIT_CLONE_URL}", engine2_source_dir)
     engine2_source_dir = engine2_source_dir / "TinyChess"
     run_cmd(f"git checkout {engine2}", engine2_source_dir)
 
     return engine1_source_dir, engine2_source_dir
 
 
-def cmake_compile(path: Path):
+def compile_cmake_project(path: Path) -> Path:
     """
     Compile a CMake project.
 
     :param path: The path to the directory with the CMakeLists.txt file.
+    :return: A pathlib.Path pointing to the binary.
     """
-    logger.info("")
+    logger.info(f"Compiling CMake project at {path}")
+
+    build_dir = path / "build"
+    if build_dir.exists():
+        rmtree(build_dir)
+    build_dir.mkdir()
+
+    logger.debug(f"Generating build system")
+    run_cmd(f'cmake .. -G "{CMAKE_BUILD_SYSTEM}"', build_dir)
+
+    logger.debug(f"Compiling binary")
+    run_cmd(f"cmake --build .", build_dir)
+
+    bin_path = build_dir / "main.exe"
+    if bin_path.exists():
+        logger.debug(f"Binary path is at {bin_path}")
+        return bin_path
+    else:
+        bin_path = build_dir / "main"
+        if bin_path.exists():
+            logger.debug(f"Binary path is at {bin_path}")
+            return bin_path
+    raise FileNotFoundError("Could not find binary!")
