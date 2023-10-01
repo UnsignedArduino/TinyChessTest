@@ -41,7 +41,7 @@ parser.add_argument(
     "-bt",
     choices=("Debug", "Release"),
     default="Debug",
-    help="Build target type when compiling the engines. Defaults to debug.",
+    help="Build target type when compiling the engines. Defaults to Debug.",
 )
 parser.add_argument(
     "--time-control",

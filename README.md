@@ -16,11 +16,11 @@ A program for tournament setup for elo testing the
 Run [`src/main.py`](src/main.py).
 
 Example command to
-test [`1870905aca990956a53c5cbe8dfa6c2d786ea57e`](https://github.com/Bobingstern/TinyChess/commit/1870905aca990956a53c5cbe8dfa6c2d786ea57e)
+test [`61afa2dcd5e256f7bf4bc3676b8610e770ab3e12`](https://github.com/Bobingstern/TinyChess/commit/61afa2dcd5e256f7bf4bc3676b8610e770ab3e12)
 against the main branch.
 
 ```commandline
-python src/main.py --engine-1-commit 1870905aca990956a53c5cbe8dfa6c2d786ea57e --engine-2-commit main
+python src/main.py --engine-1-commit 61afa2dcd5e256f7bf4bc3676b8610e770ab3e12 --engine-2-commit main
 ```
 
 ### Help
@@ -28,7 +28,7 @@ python src/main.py --engine-1-commit 1870905aca990956a53c5cbe8dfa6c2d786ea57e --
 ```commandline
 usage: TinyChessTest [-h] --engine-1-commit COMMIT --engine-2-commit COMMIT
                      [--build-type {Debug,Release}] [--time-control TC]
-                     [--games COUNT] [--concurrency COUNT]
+                     [--games COUNT] [--concurrency COUNT] [--no-book]
 
 A program for tournament setup for elo testing the TinyChess engine.
 
@@ -42,7 +42,7 @@ options:
                         checkout`, so it can be a commit hash or branch.
   --build-type {Debug,Release}, -bt {Debug,Release}
                         Build target type when compiling the engines. Defaults
-                        to debug.
+                        to Debug.
   --time-control TC, -tc TC
                         (cutechess-cli tc documentation) Set the time control.
                         The format is moves/time+increment, where moves is the
@@ -53,5 +53,6 @@ options:
   --games COUNT, -g COUNT
                         Number of games. Defaults to 50.
   --concurrency COUNT, -c COUNT
-                        Number of concurrent games. Defaults to 5.
+                        Number of concurrent games. Defaults to 1.
+  --no-book, -nb        Disables the use of an opening book.
 ```

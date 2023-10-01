@@ -159,8 +159,9 @@ def run_sprt(
     run_cmd(
         f"cutechess-cli -engine cmd={engine1_cmd} -engine cmd={engine2_cmd} -each "
         f"proto=uci tc={time_control} timemargin=300 -sprt elo0=0 elo1=5 alpha=0.05 "
-        f"beta=0.05 -games {games} -concurrency {concurrency}" + ""
-        if no_book
-        else " -openings file=../Silver_opening_suite.pgn format=pgn ",
+        f"beta=0.05 -games {games} -concurrency {concurrency}"
+        + (
+            "" if no_book else " -openings file=../Silver_opening_suite.pgn format=pgn "
+        ),
         cwd,
     )
