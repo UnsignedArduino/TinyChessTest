@@ -78,6 +78,19 @@ def fetch_source_code(commit: str, no_cache: bool = True) -> Path:
     engine_source_dir = engine_source_dir / "TinyChess"
     run_cmd(f"git checkout {commit}", engine_source_dir)
 
+    main_cpp_path = engine_source_dir / "src" / "main.cpp"
+    logger.debug(f"main.cpp path is {main_cpp_path}")
+    main_cpp_code = main_cpp_path.read_text()
+    if "id name TinyChess" not in main_cpp_code:
+        logger.warning("Could not change chess engine UCI name!")
+    else:
+        logger.debug(f"Modifying chess engine UCI name!")
+        main_cpp_path.write_text(
+            main_cpp_code.replace(
+                '"id name TinyChess"', f'"id name TinyChess-{commit}"'
+            )
+        )
+
     return engine_source_dir
 
 
