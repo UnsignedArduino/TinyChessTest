@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 from silver_opening_suite import get_silver_opening_suite_pgn
-from tinychess_test import ENGINE_BIN_DIR, SILVER_SUITE_FILE
+from tinychess_test import ENGINE_BIN_DIR, SILVER_SUITE_FILE, run_sprt
 from utils.logger import create_logger
 
 logger = create_logger(name=__name__, level=logging.DEBUG)
@@ -15,7 +15,7 @@ parser = ArgumentParser(
 )
 parser.add_argument(
     "--engine-1-commit",
-    "--e1c",
+    "-e1c",
     metavar="COMMIT",
     type=str,
     required=True,
@@ -24,12 +24,40 @@ parser.add_argument(
 )
 parser.add_argument(
     "--engine-2-commit",
-    "--e2c",
+    "-e2c",
     metavar="COMMIT",
     type=str,
     required=True,
     help="TinyChess commit for engine 2. Is passed to `git checkout`, so it can be a "
     "commit hash or branch.",
+)
+parser.add_argument(
+    "--time-control",
+    "-tc",
+    metavar="TC",
+    type=str,
+    default="25+0.1",
+    help="(cutechess-cli tc documentation) Set the time control.  The format is "
+    "moves/time+increment, where moves is the number of moves per tc, time is "
+    "time per tc (either seconds or minutes:seconds), and increment is the time "
+    "increment per move in seconds.  Infinite time control can be set with inf. The "
+    "default is 25+0.1.",
+)
+parser.add_argument(
+    "--games",
+    "-g",
+    metavar="COUNT",
+    type=int,
+    default=50,
+    help="Number of games. Defaults to 50.",
+)
+parser.add_argument(
+    "--concurrency",
+    "-c",
+    metavar="COUNT",
+    type=int,
+    default=5,
+    help="Number of concurrent games. Defaults to 5.",
 )
 
 args = parser.parse_args()
@@ -86,3 +114,7 @@ shutil.copy(engine2_bin, engine2_new_bin)
 
 logger.info(f"Copying Silver opening suite")
 SILVER_SUITE_FILE.write_text(get_silver_opening_suite_pgn())
+
+run_sprt(
+    engine1_new_bin, engine2_new_bin, args.time_control, args.games, args.concurrency
+)

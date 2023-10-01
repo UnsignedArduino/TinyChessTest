@@ -112,3 +112,33 @@ def compile_cmake_project(path: Path) -> Path:
             logger.debug(f"Binary path is at {bin_path}")
             return bin_path
     raise FileNotFoundError("Could not find binary!")
+
+
+def run_sprt(
+    engine1_bin: Path,
+    engine2_bin: Path,
+    time_control: str,
+    games: str,
+    concurrency: str,
+):
+    """
+    Run a Sequential Probability Ratio Test.
+
+    :param engine1_bin: Path to engine 1 bin.
+    :param engine2_bin: Path to engine 2 bin.
+    :param time_control: Time control.
+    :param games: Game count.
+    :param concurrency: Concurrency count.
+    """
+    assert engine1_bin.parent == engine2_bin.parent
+    cwd = engine1_bin.parent
+    engine1_cmd = engine1_bin.stem
+    engine2_cmd = engine2_bin.stem
+    logger.info(f"Starting SPRT between {engine1_cmd} and {engine2_cmd}")
+    run_cmd(
+        f"cutechess-cli -engine cmd={engine1_cmd} -engine cmd={engine2_cmd} -each "
+        f"proto=uci tc={time_control} timemargin=300 -sprt elo0=0 elo1=5 alpha=0.05 "
+        f"beta=0.05 -games {games} -openings file=../Silver_opening_suite.pgn "
+        f"format=pgn plies=5 -concurrency {concurrency}",
+        cwd,
+    )
