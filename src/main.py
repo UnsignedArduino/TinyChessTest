@@ -1,10 +1,15 @@
 import logging
 import shutil
 from argparse import ArgumentParser
-from pathlib import Path
 
 from silver_opening_suite import get_silver_opening_suite_pgn
-from tinychess_test import ENGINE_BIN_DIR, SILVER_SUITE_FILE, run_sprt
+from tinychess_test import (
+    ENGINE_BIN_DIR,
+    SILVER_SUITE_FILE,
+    compile_cmake_project,
+    fetch_source_code,
+    run_sprt,
+)
 from utils.logger import create_logger
 
 logger = create_logger(name=__name__, level=logging.DEBUG)
@@ -32,16 +37,19 @@ parser.add_argument(
     "commit hash or branch.",
 )
 parser.add_argument(
+    "--no-cache", action="store_true", help="Whether to not use the cache."
+)
+parser.add_argument(
     "--time-control",
     "-tc",
     metavar="TC",
     type=str,
-    default="25+0.1",
+    default="60+1",
     help="(cutechess-cli tc documentation) Set the time control.  The format is "
     "moves/time+increment, where moves is the number of moves per tc, time is "
     "time per tc (either seconds or minutes:seconds), and increment is the time "
     "increment per move in seconds.  Infinite time control can be set with inf. The "
-    "default is 25+0.1.",
+    "default is 60+1.",
 )
 parser.add_argument(
     "--games",
@@ -72,25 +80,14 @@ if engine1 == engine2:
         f"expected!"
     )
 
-# engine1_dir, engine2_dir = fetch_source_code(engine1, engine2)
-# For testing
-engine1_dir = Path(
-    r"E:\TinyChessTest\working\sources\1870905aca990956a53c5cbe8dfa6c2d786ea57e"
-    r"\TinyChess"
-)
-engine2_dir = Path(r"E:\TinyChessTest\working\sources\main\TinyChess")
+engine1_dir = fetch_source_code(engine1, args.no_cache)
+engine2_dir = fetch_source_code(engine2, args.no_cache)
 
 logger.debug(f"Engine 1 directory is at {engine1_dir}")
 logger.debug(f"Engine 2 directory is at {engine2_dir}")
 
-# engine1_bin = compile_cmake_project(engine1_dir)
-# engine2_bin = compile_cmake_project(engine2_dir)
-# For testing
-engine1_bin = Path(
-    r"E:\TinyChessTest\working\sources\1870905aca990956a53c5cbe8dfa6c2d786ea57e"
-    r"\TinyChess\build\main.exe"
-)
-engine2_bin = Path(r"E:\TinyChessTest\working\sources\main\TinyChess\build\main.exe")
+engine1_bin = compile_cmake_project(engine1_dir, args.no_cache)
+engine2_bin = compile_cmake_project(engine2_dir, args.no_cache)
 
 logger.debug(f"Engine 1 binary is at {engine1_bin}")
 logger.debug(f"Engine 2 binary is at {engine2_bin}")

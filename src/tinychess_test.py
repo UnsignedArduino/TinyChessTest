@@ -46,53 +46,62 @@ def delete_dot_git_dir(path: Path):
     rmtree(path)
 
 
-def fetch_source_code(engine1: str, engine2: str) -> tuple[Path, Path]:
+def fetch_source_code(commit: str, no_cache: bool = False) -> Path:
     """
-    Fetch the source code of both engine commits.
+    Fetch the source code of the engine and checkout a commit or branch.
 
-    :param engine1: Hash or branch or "cwd"
-    :param engine2: Hash or branch or "cwd"
-    :return: A tuple of two pathlib.Path pointing to the source code directories.
+    :param commit: Hash or branch or "cwd".
+    :param no_cache: Do not cache the source code.
+    :return: A pathlib.Path pointing to the source code directory.
     """
-    logger.info(f"Fetching source code for engine 1 ({engine1}) and 2 ({engine2})")
+    logger.info(f"Fetching source code for engine commit {commit}")
     SOURCE_CODE_DIR.mkdir(parents=True, exist_ok=True)
-    engine1_source_dir = SOURCE_CODE_DIR / engine1
-    engine2_source_dir = SOURCE_CODE_DIR / engine2
-    logger.debug(f"Engine 1 source directory is {engine1_source_dir}")
-    logger.debug(f"Engine 2 source directory is {engine2_source_dir}")
+    engine_source_dir = SOURCE_CODE_DIR / commit
+    logger.debug(f"Engine source directory is {engine_source_dir}")
 
-    for dir_to_create in (engine1_source_dir, engine2_source_dir):
-        if dir_to_create.exists():
-            dot_git_dir = dir_to_create / "TinyChess" / ".git"
-            if dot_git_dir.exists():
-                delete_dot_git_dir(dot_git_dir)
-            logger.debug(f"Removing {dir_to_create}")
-            rmtree(dir_to_create)
-        logger.debug(f"Creating {dir_to_create}")
-        dir_to_create.mkdir()
+    if engine_source_dir.exists():
+        if not no_cache:
+            logger.debug(f"Found cached version of source code")
+            return engine_source_dir / "TinyChess"
+        dot_git_dir = engine_source_dir / "TinyChess" / ".git"
+        if dot_git_dir.exists():
+            delete_dot_git_dir(dot_git_dir)
+        logger.debug(f"Removing {engine_source_dir}")
+        rmtree(engine_source_dir)
+    logger.debug(f"Creating {engine_source_dir}")
+    engine_source_dir.mkdir()
 
-    run_cmd(f"git clone {GIT_CLONE_URL}", engine1_source_dir)
-    engine1_source_dir = engine1_source_dir / "TinyChess"
-    run_cmd(f"git checkout {engine1}", engine1_source_dir)
+    run_cmd(f"git clone {GIT_CLONE_URL}", engine_source_dir)
+    engine_source_dir = engine_source_dir / "TinyChess"
+    run_cmd(f"git checkout {commit}", engine_source_dir)
 
-    run_cmd(f"git clone {GIT_CLONE_URL}", engine2_source_dir)
-    engine2_source_dir = engine2_source_dir / "TinyChess"
-    run_cmd(f"git checkout {engine2}", engine2_source_dir)
-
-    return engine1_source_dir, engine2_source_dir
+    return engine_source_dir
 
 
-def compile_cmake_project(path: Path) -> Path:
+def compile_cmake_project(path: Path, no_cache: bool = False) -> Path:
     """
     Compile a CMake project.
 
     :param path: The path to the directory with the CMakeLists.txt file.
+    :param no_cache: Do not cache the binary.
     :return: A pathlib.Path pointing to the binary.
     """
     logger.info(f"Compiling CMake project at {path}")
 
     build_dir = path / "build"
     if build_dir.exists():
+        if not no_cache:
+            logger.debug(f"Found cached version of binary")
+            bin_path = build_dir / "main.exe"
+            if bin_path.exists():
+                logger.debug(f"Binary path is at {bin_path}")
+                return bin_path
+            else:
+                bin_path = build_dir / "main"
+                if bin_path.exists():
+                    logger.debug(f"Binary path is at {bin_path}")
+                    return bin_path
+            logger.debug("Could not find binary in cache, rebuilding!")
         rmtree(build_dir)
     build_dir.mkdir()
 
