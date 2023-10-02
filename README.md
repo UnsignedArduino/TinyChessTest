@@ -15,41 +15,32 @@ A program for tournament setup for elo testing the
 
 Run [`src/main.py`](src/main.py).
 
-Example command to
-test [`61afa2dcd5e256f7bf4bc3676b8610e770ab3e12`](https://github.com/Bobingstern/TinyChess/commit/61afa2dcd5e256f7bf4bc3676b8610e770ab3e12)
+Example command to test
+[`5747a4eb4c0834b72ad39381c0f2074a1601d52e`](https://github.com/Bobingstern/TinyChess/commit/5747a4eb4c0834b72ad39381c0f2074a1601d52e)
 against the main branch.
 
 ```commandline
-python src/main.py --engine-1-commit 61afa2dcd5e256f7bf4bc3676b8610e770ab3e12 --engine-2-commit main
+python src/main.py --engine-1-commit 5747a4eb4c0834b72ad39381c0f2074a1601d52e --engine-2-commit main
 ```
 
 ### Help
 
 ```commandline
-usage: TinyChessTest [-h] --engine-1-commit COMMIT --engine-2-commit COMMIT
-                     [--build-type {Debug,Release}] [--time-control TC]
-                     [--games COUNT] [--concurrency COUNT] [--no-book]
-
-A program for tournament setup for elo testing the TinyChess engine.
+usage: TinyChessTest [-h] --engine-1-commit COMMIT --engine-2-commit COMMIT [--build-type {Debug,Release}] [--time-control TC] [--games COUNT] [--concurrency COUNT] [--no-book]
+                                                                                                                                                                                
+A program for tournament setup for elo testing the TinyChess engine.                                                                                                            
 
 options:
   -h, --help            show this help message and exit
   --engine-1-commit COMMIT, -e1c COMMIT
-                        TinyChess commit for engine 1. Is passed to `git
-                        checkout`, so it can be a commit hash or branch.
+                        TinyChess commit for engine 1. Is passed to `git checkout`, so it can be a commit hash or branch.
   --engine-2-commit COMMIT, -e2c COMMIT
-                        TinyChess commit for engine 2. Is passed to `git
-                        checkout`, so it can be a commit hash or branch.
+                        TinyChess commit for engine 2. Is passed to `git checkout`, so it can be a commit hash or branch.
   --build-type {Debug,Release}, -bt {Debug,Release}
-                        Build target type when compiling the engines. Defaults
-                        to Debug.
+                        Build target type when compiling the engines. Defaults to Debug.
   --time-control TC, -tc TC
-                        (cutechess-cli tc documentation) Set the time control.
-                        The format is moves/time+increment, where moves is the
-                        number of moves per tc, time is time per tc (either
-                        seconds or minutes:seconds), and increment is the time
-                        increment per move in seconds. Infinite time control
-                        can be set with inf. The default is 60+1.
+                        (cutechess-cli tc documentation) Set the time control. The format is moves/time+increment, where moves is the number of moves per tc, time is time per tc (either seconds or minutes:seconds), and increment    
+                        is the time increment per move in seconds. Infinite time control can be set with inf. The default is 60+1.
   --games COUNT, -g COUNT
                         Number of games. Defaults to 50.
   --concurrency COUNT, -c COUNT
