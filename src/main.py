@@ -2,10 +2,10 @@ import logging
 import shutil
 from argparse import ArgumentParser
 
-from silver_opening_suite import get_silver_opening_suite_pgn
 from tinychess_test import (
     ENGINE_BIN_DIR,
-    SILVER_SUITE_FILE,
+    OPENING_FILE,
+    SELECTED_OPENING_SUITE,
     compile_cmake_project,
     fetch_source_code,
     run_sprt,
@@ -116,8 +116,9 @@ shutil.copy(engine1_bin, engine1_new_bin)
 logger.debug(f"Copying {engine2_bin} to {engine2_new_bin}")
 shutil.copy(engine2_bin, engine2_new_bin)
 
-logger.info(f"Copying Silver opening suite")
-SILVER_SUITE_FILE.write_text(get_silver_opening_suite_pgn())
+logger.info(f"Copying opening suite from {SELECTED_OPENING_SUITE}")
+OPENING_FILE.touch()
+shutil.copy(SELECTED_OPENING_SUITE, OPENING_FILE)
 
 run_sprt(
     engine1_new_bin,

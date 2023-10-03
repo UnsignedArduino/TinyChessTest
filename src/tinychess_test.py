@@ -12,7 +12,10 @@ logger = create_logger(name=__name__, level=logging.DEBUG)
 WORKING_SPACE_DIR = Path.cwd() / "working"
 SOURCE_CODE_DIR = WORKING_SPACE_DIR / "sources"
 ENGINE_BIN_DIR = WORKING_SPACE_DIR / "bins"
-SILVER_SUITE_FILE = WORKING_SPACE_DIR / "Silver_opening_suite.pgn"
+OPENING_FILE = WORKING_SPACE_DIR / "opening_suite.pgn"
+SELECTED_OPENING_SUITE = (
+    Path.cwd() / "src" / "opening_suites" / "UHO_2022_8mvs_big_+170_+199.pgn"
+)
 
 GIT_CLONE_URL = "https://github.com/Bobingstern/TinyChess"
 CMAKE_BUILD_SYSTEM = "MinGW Makefiles"
@@ -174,7 +177,9 @@ def run_sprt(
         f"proto=uci tc={time_control} timemargin=300 -sprt elo0=0 elo1=5 alpha=0.05 "
         f"beta=0.05 -games {games} -concurrency {concurrency}"
         + (
-            "" if no_book else " -openings file=../Silver_opening_suite.pgn format=pgn "
+            ""
+            if no_book
+            else f" -openings file={OPENING_FILE.expanduser().resolve()} format=pgn "
         ),
         cwd,
     )
