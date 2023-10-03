@@ -23,6 +23,15 @@ against the main branch.
 python src/main.py --engine-1-commit 5747a4eb4c0834b72ad39381c0f2074a1601d52e --engine-2-commit main
 ```
 
+Example command to test
+[`5747a4eb4c0834b72ad39381c0f2074a1601d52e`](https://github.com/Bobingstern/TinyChess/commit/5747a4eb4c0834b72ad39381c0f2074a1601d52e)
+against the main branch with a time control of 5+0.01 and 1000 games with
+concurrency of 5.
+
+```commandline
+python src/main.py --engine-1-commit 5747a4eb4c0834b72ad39381c0f2074a1601d52e --engine-2-commit main --concurrency 5 --time-control 5+0.01 --games 1000
+```
+
 ### Help
 
 ```commandline
