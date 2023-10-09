@@ -202,8 +202,6 @@ def fix_fens(fen_loc: Path) -> Path:
     logger.info(f"Fixing FENs at {fen_loc}")
     new_fen_loc = fen_loc.with_stem(fen_loc.stem.replace(".unfixed", ""))
     logger.info(f"New FEN path is {new_fen_loc}")
-    skipped_fens = 0
-    fixed_fens = 0
     with fen_loc.open(mode="rt") as unfixed_fens_file, new_fen_loc.open(
         mode="wt"
     ) as fixed_fens_file:
@@ -212,16 +210,11 @@ def fix_fens(fen_loc: Path) -> Path:
             outcome = board.outcome()
             fixed_fen = f"{unfixed_fen.strip()}"
             if outcome is None:
-                skipped_fens += 1
-                continue
+                fixed_fen += " [0.5]\n"
             elif outcome.termination == chess.Termination.CHECKMATE:
                 if outcome.winner == chess.WHITE:
                     fixed_fen += " [1.0]\n"
                 else:
                     fixed_fen += " [0.0]\n"
-            else:
-                fixed_fen += " [0.0]\n"
-            fixed_fens += 1
             fixed_fens_file.write(fixed_fen)
-    logger.info(f"Fixed {fixed_fens} FENs, skipped {skipped_fens} FENs")
     return new_fen_loc

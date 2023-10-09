@@ -7,8 +7,6 @@ from tinychess_test import (
     ENGINE_BIN_DIR,
     OPENING_FILE,
     SELECTED_OPENING_SUITE,
-    compile_cmake_project,
-    fetch_source_code,
     fix_fens,
     run_sprt,
 )
@@ -99,18 +97,18 @@ if engine1 == engine2:
         f"expected!"
     )
 
-engine1_dir = fetch_source_code(engine1)
-engine2_dir = fetch_source_code(engine2)
-
-logger.debug(f"Engine 1 directory is at {engine1_dir}")
-logger.debug(f"Engine 2 directory is at {engine2_dir}")
-
-engine1_bin = compile_cmake_project(engine1_dir, args.build_type)
-engine2_bin = compile_cmake_project(engine2_dir, args.build_type)
-# engine1_bin = Path(
-#     r"E:\TinyChessTest\working\sources\5747a4eb4c0834b72ad39381c0f2074a1601d52e\TinyChess\build\main.exe"
-# )
-# engine2_bin = Path(r"E:\TinyChessTest\working\sources\main\TinyChess\build\main.exe")
+# engine1_dir = fetch_source_code(engine1)
+# engine2_dir = fetch_source_code(engine2)
+#
+# logger.debug(f"Engine 1 directory is at {engine1_dir}")
+# logger.debug(f"Engine 2 directory is at {engine2_dir}")
+#
+# engine1_bin = compile_cmake_project(engine1_dir, args.build_type)
+# engine2_bin = compile_cmake_project(engine2_dir, args.build_type)
+engine1_bin = Path(
+    r"E:\TinyChessTest\working\sources\5747a4eb4c0834b72ad39381c0f2074a1601d52e\TinyChess\build\main.exe"
+)
+engine2_bin = Path(r"E:\TinyChessTest\working\sources\main\TinyChess\build\main.exe")
 
 logger.debug(f"Engine 1 binary is at {engine1_bin}")
 logger.debug(f"Engine 2 binary is at {engine2_bin}")
