@@ -5,6 +5,8 @@ from shutil import rmtree
 from subprocess import run
 from typing import Optional
 
+import chess
+
 from utils.logger import create_logger
 
 logger = create_logger(name=__name__, level=logging.DEBUG)
@@ -18,7 +20,7 @@ SELECTED_OPENING_SUITE = (
 )
 
 GIT_CLONE_URL = "https://github.com/Bobingstern/TinyChess"
-CMAKE_BUILD_SYSTEM = "MinGW Makefiles"
+CMAKE_BUILD_SYSTEM = "Ninja"
 
 
 def run_cmd(cmd: str, cwd: Optional[Path] = None):
@@ -155,6 +157,7 @@ def run_sprt(
     games: str,
     concurrency: str,
     no_book: bool = False,
+    save_fens: Optional[Path] = None,
 ):
     """
     Run a Sequential Probability Ratio Test.
@@ -165,8 +168,11 @@ def run_sprt(
     :param games: Game count.
     :param concurrency: Concurrency count.
     :param no_book: Disable the use of an opening book.
+    :param save_fens: Save FENs to this location.
     """
     logger.info("Running SPRT" + " with no book" if no_book else "")
+    fen_loc = save_fens.expanduser().resolve().with_suffix(".unfixed.fens")
+    logger.debug(f"Saving FENs to {fen_loc}")
     assert engine1_bin.parent == engine2_bin.parent
     cwd = engine1_bin.parent
     engine1_cmd = engine1_bin.stem
@@ -179,7 +185,43 @@ def run_sprt(
         + (
             ""
             if no_book
-            else f" -openings file={OPENING_FILE.expanduser().resolve()} format=pgn "
-        ),
+            else f" -openings file={OPENING_FILE.expanduser().resolve()} format=pgn"
+        )
+        + ("" if save_fens is None else f" -epdout {fen_loc}"),
         cwd,
     )
+
+
+def fix_fens(fen_loc: Path) -> Path:
+    """
+    Fix FENs to include brackets of result. [1.0], [0.5], [0.0]
+
+    :param fen_loc: Location of FENs.
+    :return: Location of fixed FENs.
+    """
+    logger.info(f"Fixing FENs at {fen_loc}")
+    new_fen_loc = fen_loc.with_stem(fen_loc.stem.replace(".unfixed", ""))
+    logger.info(f"New FEN path is {new_fen_loc}")
+    skipped_fens = 0
+    fixed_fens = 0
+    with fen_loc.open(mode="rt") as unfixed_fens_file, new_fen_loc.open(
+        mode="wt"
+    ) as fixed_fens_file:
+        for unfixed_fen in unfixed_fens_file:
+            board = chess.Board(unfixed_fen)
+            outcome = board.outcome()
+            fixed_fen = f"{unfixed_fen.strip()}"
+            if outcome is None:
+                skipped_fens += 1
+                continue
+            elif outcome.termination == chess.Termination.CHECKMATE:
+                if outcome.winner == chess.WHITE:
+                    fixed_fen += " [1.0]\n"
+                else:
+                    fixed_fen += " [0.0]\n"
+            else:
+                fixed_fen += " [0.0]\n"
+            fixed_fens += 1
+            fixed_fens_file.write(fixed_fen)
+    logger.info(f"Fixed {fixed_fens} FENs, skipped {skipped_fens} FENs")
+    return new_fen_loc

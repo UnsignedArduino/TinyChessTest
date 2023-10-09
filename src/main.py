@@ -1,6 +1,7 @@
 import logging
 import shutil
 from argparse import ArgumentParser
+from pathlib import Path
 
 from tinychess_test import (
     ENGINE_BIN_DIR,
@@ -8,6 +9,7 @@ from tinychess_test import (
     SELECTED_OPENING_SUITE,
     compile_cmake_project,
     fetch_source_code,
+    fix_fens,
     run_sprt,
 )
 from utils.logger import create_logger
@@ -74,9 +76,19 @@ parser.add_argument(
 parser.add_argument(
     "--no-book", "-nb", action="store_true", help="Disables the use of an opening book."
 )
+parser.add_argument(
+    "--save-fen",
+    "-sf",
+    metavar="PATH",
+    default=None,
+    help="Save the FENs of the game to a file path.",
+)
 
 args = parser.parse_args()
 logger.debug(f"Arguments received: {args}")
+
+save_fen_loc = Path(args.save_fen) if args.save_fen is not None else None
+logger.debug(f"Saving FENs to {save_fen_loc.expanduser().resolve()}")
 
 engine1: str = args.engine_1_commit.lower().strip()
 engine2: str = args.engine_2_commit.lower().strip()
@@ -95,6 +107,10 @@ logger.debug(f"Engine 2 directory is at {engine2_dir}")
 
 engine1_bin = compile_cmake_project(engine1_dir, args.build_type)
 engine2_bin = compile_cmake_project(engine2_dir, args.build_type)
+# engine1_bin = Path(
+#     r"E:\TinyChessTest\working\sources\5747a4eb4c0834b72ad39381c0f2074a1601d52e\TinyChess\build\main.exe"
+# )
+# engine2_bin = Path(r"E:\TinyChessTest\working\sources\main\TinyChess\build\main.exe")
 
 logger.debug(f"Engine 1 binary is at {engine1_bin}")
 logger.debug(f"Engine 2 binary is at {engine2_bin}")
@@ -127,4 +143,12 @@ run_sprt(
     args.games,
     args.concurrency,
     args.no_book,
+    save_fen_loc,
 )
+
+if save_fen_loc is not None:
+    logger.debug(f"Fixing FENs")
+    unfixed_fens_loc = save_fen_loc.with_suffix(".unfixed.fens")
+    fixed_fens_loc = fix_fens(unfixed_fens_loc)
+    unfixed_fens_loc.unlink()
+    logger.info(f"Fixed FENs at {fixed_fens_loc}")
